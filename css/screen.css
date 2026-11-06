@@ -1,0 +1,367 @@
+/* ================= ЕКРАН (сцена 1920×1080, масштабується) ================= */
+
+html[data-mode="screen"], html[data-mode="screen"] body { height: 100%; overflow: hidden; }
+
+#screen { position: fixed; inset: 0; overflow: hidden; background: var(--cream); }
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, .5));
+  transform-origin: 50% 50%;
+  display: grid;
+  grid-template-columns: 380px 560px 1fr;
+  grid-template-rows: 150px minmax(0, 1fr) 118px;
+  column-gap: 40px;
+  padding: 30px 60px 26px;
+  background: var(--cream);
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+/* --- декор --- */
+.decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.decor .cf { opacity: .55; animation: floaty 7s ease-in-out infinite; }
+.decor .cf:nth-child(2n) { animation-duration: 9s; animation-delay: -3s; }
+.decor .cf:nth-child(3n) { animation-duration: 11s; animation-delay: -5s; }
+.decor .cf-dia { --rot: 45deg; }
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-14px) rotate(calc(var(--rot, 0deg) + 20deg)); }
+}
+
+/* --- заголовок --- */
+.title {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+  margin: 0;
+  font-size: 92px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 1;
+}
+.title-accent {
+  background: linear-gradient(transparent 58%, var(--yellow) 58%, var(--yellow) 92%, transparent 92%);
+  padding: 0 8px;
+}
+
+/* --- ліва колонка: Хвилюнчик --- */
+.col-left {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 40px;
+}
+.khv-big { width: 340px; height: auto; overflow: visible; }
+.khv-shadow { width: 220px; height: 26px; margin-top: -18px; border-radius: 50%; background: rgba(42, 32, 105, .1); }
+
+.bubble {
+  position: relative;
+  margin-bottom: 34px;
+  padding: 18px 34px;
+  background: var(--white);
+  border: 5px solid var(--navy);
+  border-radius: 40px;
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  box-shadow: 0 8px 0 rgba(42, 32, 105, .12);
+  transition: transform .5s cubic-bezier(.3, 1.5, .5, 1), opacity .4s;
+}
+.bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -24px;
+  width: 36px;
+  height: 36px;
+  background: var(--white);
+  border-right: 5px solid var(--navy);
+  border-bottom: 5px solid var(--navy);
+  transform: translateX(-50%) rotate(45deg);
+  border-bottom-right-radius: 6px;
+}
+.bubble.is-swap { transform: scale(.6); opacity: 0; }
+
+/* --- центр: силует --- */
+.col-figure {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.figure { height: 100%; width: auto; overflow: visible; }
+
+.figure .shadow { fill: rgba(42, 32, 105, .08); }
+.figure .part { fill: var(--body); stroke: var(--navy); stroke-width: 7; stroke-linejoin: round; }
+.figure .shoe { fill: var(--violet); }
+.figure .limb-outline { fill: none; stroke: var(--navy); stroke-width: 62; stroke-linecap: round; }
+.figure .limb-fill { fill: none; stroke: var(--body); stroke-width: 48; stroke-linecap: round; }
+.figure .hair { fill: none; stroke: var(--navy); stroke-width: 8; stroke-linecap: round; }
+.figure .ear { fill: var(--body); stroke: var(--navy); stroke-width: 7; }
+.figure .face { fill: var(--navy); }
+.figure .face-line { fill: none; stroke: var(--navy); stroke-width: 7; stroke-linecap: round; }
+.figure .crease { fill: none; stroke: var(--navy); stroke-width: 5; stroke-linecap: round; opacity: .25; }
+
+/* Зони */
+.zone .zs { transform-box: fill-box; transform-origin: center; }
+.zone .zs > * {
+  fill: rgba(255, 255, 255, 0);
+  stroke: var(--navy);
+  stroke-width: 5;
+  stroke-dasharray: 12 10;
+  stroke-linecap: round;
+  stroke-opacity: .5;
+  transition: fill .7s ease, stroke-opacity .4s;
+}
+.zone.is-on .zs > * { stroke-dasharray: none; stroke-opacity: 1; stroke-width: 6; }
+
+.zone.is-pulse .zs { animation: zonePulse 1s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes zonePulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  60% { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+
+.stage.is-summary .zone.is-top .zs { animation: topPulse 2.4s ease-in-out infinite; }
+@keyframes topPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.16); }
+}
+
+.ripple { transform-box: fill-box; transform-origin: center; animation: ripple 1.2s ease-out forwards; pointer-events: none; }
+.ripple > * { fill: none !important; stroke-width: 9; stroke-dasharray: none; }
+@keyframes ripple {
+  0% { transform: scale(1); opacity: .95; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* Номери зон */
+.badge-line { stroke: var(--navy); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1 11; opacity: .6; }
+.badge-end { fill: var(--navy); opacity: .6; }
+.badge-c { transform-box: fill-box; transform-origin: center; }
+.badge-c circle { fill: var(--white); stroke: var(--navy); stroke-width: 6; transition: fill .7s ease; }
+.badge-c text { fill: var(--navy); font-family: var(--font); font-weight: 900; font-size: 66px; text-anchor: middle; }
+.badge.is-pulse .badge-c { animation: zonePulse 1s cubic-bezier(.3, 1.6, .5, 1); }
+.stage.is-summary .badge.is-top .badge-c { animation: topPulse 2.4s ease-in-out infinite; }
+
+/* Хвилюнчик, що визирає */
+.peek-anim { transform-box: fill-box; transform-origin: center; animation: peek 2.4s cubic-bezier(.34, 1.4, .5, 1) forwards; }
+@keyframes peek {
+  0% { transform: translate(0, 0) scale(0); }
+  18% { transform: translate(var(--dx), var(--dy)) scale(1.12); }
+  26% { transform: translate(var(--dx), var(--dy)) scale(.96); }
+  34% { transform: translate(var(--dx), var(--dy)) scale(1); }
+  48% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(-6deg); }
+  62% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(6deg); }
+  78% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(0deg); }
+  100% { transform: translate(0, 0) scale(0); }
+}
+
+/* --- права колонка: легенда / підсумок --- */
+.col-right { grid-column: 3; grid-row: 2; position: relative; z-index: 1; }
+
+.card {
+  background: var(--white);
+  border: 5px solid var(--navy);
+  border-radius: 44px;
+  box-shadow: 0 10px 0 rgba(42, 32, 105, .12);
+}
+
+.legend {
+  position: absolute;
+  inset: 0;
+  padding: 14px 26px;
+  display: flex;
+  align-items: center;
+  transition: opacity .5s ease, transform .5s ease;
+}
+.legend-list { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.legend-list li {
+  display: grid;
+  grid-template-columns: 80px 80px 1fr;
+  align-items: center;
+  column-gap: 20px;
+  height: 96px;
+  padding: 0 12px;
+  border-radius: 30px;
+}
+.legend-list li.is-pulse { animation: rowFlash 1.2s ease-out; }
+@keyframes rowFlash {
+  0% { background-color: rgba(255, 212, 59, 0); }
+  20% { background-color: rgba(255, 212, 59, .55); }
+  100% { background-color: rgba(255, 212, 59, 0); }
+}
+.lg-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 5px solid var(--navy);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  font-weight: 900;
+  line-height: 1;
+  transition: background-color .7s ease;
+}
+.lg-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  border: 4px solid var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lg-icon .icon { width: 58px; height: 58px; }
+.lg-name { font-size: 54px; font-weight: 800; line-height: 1.05; white-space: nowrap; }
+
+.summary {
+  position: absolute;
+  inset: 0;
+  padding: 50px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 36px;
+  background: #FFF9E8;
+  opacity: 0;
+  transform: translateY(40px) scale(.95);
+  pointer-events: none;
+  transition: opacity .6s ease, transform .7s cubic-bezier(.3, 1.4, .5, 1);
+}
+.summary-icons { position: relative; height: 34px; display: flex; gap: 26px; padding-left: 6px; }
+.summary-icons .cf { position: relative; }
+.summary-text { margin: 0; font-size: 62px; font-weight: 900; line-height: 1.25; }
+
+.stage.is-summary .legend { opacity: 0; transform: translateY(-30px) scale(.96); }
+.stage.is-summary .summary { opacity: 1; transform: none; }
+
+/* --- підказка --- */
+.hint {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 10px 44px 10px 26px;
+  background: var(--white);
+  border: 5px solid var(--navy);
+  border-radius: 60px;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  transition: opacity .5s ease, transform .5s ease;
+}
+.hint-icon { width: 72px; height: 72px; flex: none; }
+.stage.is-summary .hint { opacity: 0; transform: translateY(30px); }
+
+/* --- конфеті-сплеск --- */
+.burst { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+.burst .bp {
+  position: absolute;
+  top: -50px;
+  left: var(--x);
+  width: 24px;
+  height: 24px;
+  border: 4px solid var(--navy);
+  animation: fall var(--d) cubic-bezier(.3, .2, .6, 1) var(--delay) forwards;
+}
+.burst .bp.round { border-radius: 50%; }
+.burst .bp.dia { border-radius: 4px; }
+@keyframes fall {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(var(--dx), 1180px) rotate(var(--r)); opacity: 0; }
+}
+
+/* ================= ХВИЛЮНЧИК ================= */
+.k-body, .k-arm { fill: var(--violet); stroke: var(--navy); stroke-width: 7; stroke-linejoin: round; }
+.k-foot { fill: #8466EE; stroke: var(--navy); stroke-width: 7; }
+.k-tuft { fill: none; stroke: var(--navy); stroke-width: 7; stroke-linecap: round; }
+.k-fur { fill: none; stroke: var(--navy); stroke-width: 5; stroke-linecap: round; opacity: .3; }
+.k-eye { fill: var(--white); stroke: var(--navy); stroke-width: 6; }
+.k-pupil { fill: var(--navy); }
+.k-shine { fill: var(--white); }
+.k-eyes-happy path { fill: none; stroke: var(--navy); stroke-width: 9; stroke-linecap: round; }
+.k-brows path { fill: none; stroke: var(--navy); stroke-width: 7; stroke-linecap: round; }
+.k-blush { fill: var(--coral); opacity: .75; }
+.k-mouth-worried { fill: none; stroke: var(--navy); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.k-mouth-smile { fill: var(--navy); stroke: var(--navy); stroke-width: 5; stroke-linejoin: round; }
+.k-mouth-o { fill: var(--navy); }
+.k-sweat { fill: var(--blue); stroke: var(--navy); stroke-width: 5; }
+
+.k-eyes-open, .k-eyes-happy, .k-brows, .k-blush, .k-mouth, .k-sweat { transition: opacity .45s ease; }
+.k-shake, .k-bob, .k-pupils, .k-sweat { transform-box: fill-box; transform-origin: center; }
+
+/* за замовчуванням приховано */
+.k-eyes-happy, .k-mouth-smile, .k-mouth-o, .k-blush, .k-sweat, .k-mouth-worried, .k-brows { opacity: 0; }
+
+/* тремтить */
+.khv--tremble .k-brows, .khv--tremble .k-mouth-worried, .khv--tremble .k-sweat { opacity: 1; }
+.khv--tremble .k-shake { animation: shake .26s ease-in-out infinite alternate; }
+.khv--tremble .k-pupils { animation: dart 2.2s ease-in-out infinite; }
+.khv--tremble .k-sweat { animation: drip 1.6s ease-in infinite; }
+@keyframes shake {
+  0% { transform: translate(-5px, 0) rotate(-2.5deg); }
+  100% { transform: translate(5px, 1px) rotate(2.5deg); }
+}
+@keyframes dart {
+  0%, 40% { transform: translate(-5px, 0); }
+  50%, 90% { transform: translate(6px, 2px); }
+  100% { transform: translate(-5px, 0); }
+}
+@keyframes drip {
+  0% { transform: translateY(-6px); opacity: 0; }
+  20% { opacity: 1; }
+  80% { transform: translateY(14px); opacity: 1; }
+  100% { transform: translateY(20px); opacity: 0; }
+}
+
+/* спостерігає (на карті вже є голоси) */
+.khv--watch .k-mouth-o, .khv--watch .k-blush { opacity: 1; }
+.khv--watch .k-brows { opacity: .6; }
+.khv--watch .k-bob { animation: sway 2.6s ease-in-out infinite; }
+.khv--watch .k-pupils { transform: translate(8px, 2px); transition: transform .5s; }
+@keyframes sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg) translateY(-6px); }
+}
+
+/* заспокоївся й усміхається */
+.khv--calm .k-eyes-open { opacity: 0; }
+.khv--calm .k-eyes-happy, .khv--calm .k-mouth-smile, .khv--calm .k-blush { opacity: 1; }
+.khv--calm .k-bob { animation: float 3.2s ease-in-out infinite; }
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  50% { transform: translateY(-16px) scale(1.03, .98); }
+}
+
+/* визирає із зони */
+.khv--peek .k-mouth-o, .khv--peek .k-blush { opacity: 1; }

@@ -1,0 +1,41 @@
+:root {
+  --cream: #FFF4DC;
+  --navy: #2A2069;
+  --navy-soft: rgba(42, 32, 105, .45);
+  --yellow: #FFD43B;
+  --blue: #4DA8FF;
+  --mint: #3FD6A0;
+  --coral: #FF7A66;
+  --violet: #A78BFA;
+  --body: #EEE9FF;
+  --white: #FFFFFF;
+  --font: 'Nunito', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--cream);
+  color: var(--navy);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+button { font: inherit; color: inherit; }
+
+/* Показуємо лише один режим. */
+html[data-mode="screen"] #remote { display: none; }
+html[data-mode="remote"] #screen { display: none; }
+
+/* Конфеті-декор: ромбики й кружечки. */
+.cf { position: absolute; display: block; width: 26px; height: 26px; border: 4px solid var(--navy); }
+.cf-dot { border-radius: 50%; width: 22px; height: 22px; }
+.cf-dia { transform: rotate(45deg); border-radius: 5px; }
+.cf.y { background: var(--yellow); }
+.cf.b { background: var(--blue); }
+.cf.m { background: var(--mint); }
+.cf.c { background: var(--coral); }
+.cf.v { background: var(--violet); }
